@@ -1,0 +1,37 @@
+{
+  "name": "grunt-imagemagick",
+  "description": "Adds utility tasks for grunt which use ImageMagick",
+  "version": "0.1.0",
+  "homepage": "https://github.com/icagstrout/grunt-imagemagick",
+  "author": {
+    "name": "Arne Strout",
+    "email": "arne.strout@icrossing.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/icagstrout/grunt-imagemagick.git"
+  },
+  "bugs": {
+    "url": "https://github.com/icagstrout/grunt-imagemagick/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/icagstrout/grunt-imagemagick/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "grunt.js",
+  "bin": "bin/grunt-imagemagick",
+  "engines": {
+    "node": "*"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.3.17"
+  },
+  "keywords": [
+    "gruntplugin"
+  ]
+}
