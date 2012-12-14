@@ -36,11 +36,19 @@ exports['imagemagick'] = {
             files:"**/*-2x.jpg",
             suffix:["-2x","-1x","-low"],
           }
+        },"imagemagick-resize":{
+          dev:{
+            from:'test/',
+            to:'test/resized/',
+            files:'resizeme.jpg',
+            props:{
+              width:100
+            }
+          }
         }
-
       });
       grunt.loadTasks('tasks');
-      grunt.task.run('imagemagick-hisrc');
+      grunt.task.run('imagemagick-hisrc imagemagick-resize');
       test.ok(true,"Works");
     }catch(e){
       test.ok(false,"Broken:["+e+"]");

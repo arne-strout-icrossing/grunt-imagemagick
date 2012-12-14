@@ -7,7 +7,28 @@
  */
 
 var grunt=require('grunt');
-var ResizeCommand={
+var fs=require('fs');
+var path=require('path');
+/** Quick Proxy methods **/
+var proxy=function(f,c){
+  var fn=f;
+  var cn=c;
+  return function(){
+    fn.apply(cn,Array.prototype.slice.call(arguments));
+  };
+};
+// True if the file path exists.
+var fileExists = function() {
+  var filepath = path.join.apply(path, arguments);
+  return fs.existsSync(filepath);
+};
+/****
+* HisrcCommand - Command which asynchronously generates all sizes for a large image for use with HiSRC.js
+* This command assumes that suffix is an array of suffixes in the order [{FULL}, {1/2}, {1/4}].
+* for example, a typical use is suffix:['-2x','-1x','-low'] with files: '{PATH}*-2x.jpg'. The actual file
+* provided should always be the retina image (eg: 2X) but you can use whatever suffixes you wish.
+**/
+var HisrcCommand={
   path:'',
   name:'',
   ext:'',
@@ -27,7 +48,7 @@ var ResizeCommand={
       this.im=require('node-imagemagick');
       this.callback=fcallback;
 
-      this.im.identify(['-format','%wx%h',this.file],this.proxy(this.resize,this));
+      this.im.identify(['-format','%wx%h',this.file],proxy(this.resize,this));
     }catch(e){
       grunt.log.write('error '+e+"\n");
     }
@@ -43,7 +64,7 @@ var ResizeCommand={
       height:Math.round(this.baseHeight/2),
       srcPath: this.file,
       dstPath: this.path + this.name.split(this.suffix[0]).join(this.suffix[1]) +'.'+this.ext
-    },this.proxy(this.resize2,this));
+    },proxy(this.resize2,this));
     } catch (e){
       grunt.log.write('error '+e+"\n");
     }
@@ -57,7 +78,7 @@ var ResizeCommand={
       height:Math.round(this.baseHeight/4),
       srcPath: this.file,
       dstPath: this.path + this.name.split(this.suffix[0]).join(this.suffix[2]) +'.'+this.ext
-    },this.proxy(this.complete,this));
+    },proxy(this.complete,this));
     } catch (e){
       grunt.log.write('error '+e+"\n");
     }
@@ -66,14 +87,38 @@ var ResizeCommand={
     grunt.log.write(" - created responsive for "+this.path + this.name +"."+this.ext+"\n");
     this.callback.apply(this.context,[this]);
   },
-  proxy:function(f,c){
-    var fn=f;
-    var cn=c;
-    return function(){
-      fn.apply(cn,Array.prototype.slice.call(arguments));
-    };
+};
+
+/**
+* ResizeCommand
+* resizes the specified images or groups of images using the specified parameters
+* currently uses the same properties as node-imagemagick 
+**/
+var ResizeCommand={
+  props:undefined,
+  callback:undefined,
+  context:undefined,
+  im:undefined,
+  init:function(pfrom,pto,pprops,pcallback,pcontext){
+    
+    this.props=Object.create(pprops);
+    this.props.srcPath=pfrom;
+    this.props.dstPath=pto;
+    this.callback=pcallback;
+    this.context=pcontext;
+    this.im=require('node-imagemagick');
+
+    grunt.log.write('resizing:'+this.props.srcPath+"...\n");
+    this.im.resize(this.props,proxy(this.complete,this));
+  },
+  complete:function(err){
+    grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
+    this.callback.apply(this.context,[this]);
   }
 };
+
+
+
 
 module.exports = function(grunt) {
   // Please see the grunt documentation for more information regarding task and
@@ -86,7 +131,7 @@ module.exports = function(grunt) {
    * imagemagick-hisrc TASK
    * takes a file identification expression (usually with wildcards) to create a list of files
    * iterates over the files to generate 1/2 and 1/4 size alternatives for mobile.
-   * uses the filename pattern specified in the "pattern" property to save the files.
+   * uses the filename pattern specified in the "suffix" property to save the files.
    */
   grunt.registerMultiTask('imagemagick-hisrc', 'Performs a number of configured tasks', function() {
     var done = this.async();
@@ -95,7 +140,7 @@ module.exports = function(grunt) {
     var fls=grunt.file.expand(this.data.files);
     var i=0;
     var count=fls.length;
-    var pattern=this.data.pattern;
+    var suffix=this.data.suffix;
     var cmds=[];
     var cmd;
 
@@ -110,9 +155,9 @@ module.exports = function(grunt) {
     }
 
     for(i=0;i<fls.length;i++){
-      cmd = Object.create(ResizeCommand);
+      cmd = Object.create(HisrcCommand);
       cmds.push(cmd);
-      cmd.init(fls[i],this.data.suffix,onCmdComplete,this);
+      cmd.init(fls[i],suffix,onCmdComplete,this);
     }
     if(fls.length<1){
       grunt.log.write("Nothing to do\n");
@@ -122,6 +167,50 @@ module.exports = function(grunt) {
     }
   });
 
+  /*
+  * imagemagick-resize TASK
+  * takes a from folder, a to folder, a file pattern, and properties, and resizes the matching
+  * files, outputting the resized images to the "to" folder.
+  * {from:"folder",to:"folder",files:"*.ext",props{width:100}} etc.
+  */
+  grunt.registerMultiTask('imagemagick-resize','Resizes images using imagemagick',function(){
+    var done= this.async();
+    grunt.log.write("Beginning ImageMagick resizing process\n");
+    var cmds=[],cmd;
+    var i=0;
+    var fls=grunt.file.expand(this.data.from+this.data.files);
+
+    function onCmdComplete(cmd,success){
+      grunt.log.write("completed:"+cmd.dstPath+"\n");
+      cmds.splice(cmds.indexOf(cmd),1);
+      if(cmds.length<1){
+        done();
+      }
+    }
+
+    if(!fileExists(this.data.to)){
+      grunt.file.mkdir(this.data.to);
+    }
+
+    for(i=0;i<fls.length;i++){
+      cmd=Object.create(ResizeCommand);
+      cmds.push(cmd);
+      cmd.init(
+        fls[i],
+        this.data.to+fls[i].substr(this.data.from.length), // replace folder
+        this.data.props,
+        onCmdComplete,
+        this
+      );
+    }
+
+    if(fls.length<1){
+      grunt.log.write("Nothing to do\n");
+      done();
+    }else{
+      grunt.log.write("all queued\n");
+    }
+  });
 
   // ==========================================================================
   // HELPERS
@@ -130,5 +219,4 @@ module.exports = function(grunt) {
   grunt.registerHelper('imagemagick-resize', function() {
     return '';
   });
-
 };
