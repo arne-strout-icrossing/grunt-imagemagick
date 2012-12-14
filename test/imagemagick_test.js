@@ -28,7 +28,23 @@ exports['imagemagick'] = {
   'helper': function(test) {
     test.expect(1);
     // tests here
-    test.equal(grunt.helper('imagemagick'), 'imagemagick!!!', 'should return the correct value.');
+    try{
+      var grunt = require('grunt');
+      grunt.initConfig({
+        "imagemagick-hisrc":{
+          dev:{
+            files:"**/*-2x.jpg",
+            suffix:["-2x","-1x","-low"],
+          }
+        }
+
+      });
+      grunt.loadTasks('tasks');
+      grunt.task.run('imagemagick-hisrc');
+      test.ok(true,"Works");
+    }catch(e){
+      test.ok(false,"Broken:["+e+"]");
+    }
     test.done();
   }
 };
