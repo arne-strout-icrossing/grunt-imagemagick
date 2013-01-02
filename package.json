@@ -1,7 +1,7 @@
 {
   "name": "grunt-imagemagick",
   "description": "Adds utility tasks for grunt which use ImageMagick",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "homepage": "https://github.com/icagstrout/grunt-imagemagick",
   "author": {
     "name": "Arne Strout",
@@ -33,7 +33,8 @@
   },
   "dependencies":{
     "fs":"",
-    "path":">= 0.0.1"
+    "path":">= 0.0.1",
+    "node-imagemagick":""
   },
   "keywords": [
     "gruntplugin"
