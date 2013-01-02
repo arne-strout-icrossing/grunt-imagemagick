@@ -45,10 +45,14 @@ exports['imagemagick'] = {
               width:100
             }
           }
+        },"imagemagick-convert":{
+          dev:{
+            args:['test/resizeme.jpg','-resize', '25x25', 'test/resized/resizeme-small.jpg']
+          }
         }
       });
       grunt.loadTasks('tasks');
-      grunt.task.run('imagemagick-hisrc imagemagick-resize');
+      grunt.task.run('imagemagick-hisrc imagemagick-resize imagemagick-convert');
       test.ok(true,"Works");
     }catch(e){
       test.ok(false,"Broken:["+e+"]");

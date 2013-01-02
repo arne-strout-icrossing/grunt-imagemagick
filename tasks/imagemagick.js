@@ -85,7 +85,7 @@ var HisrcCommand={
   },
   complete:function(){
     grunt.log.write(" - created responsive for "+this.path + this.name +"."+this.ext+"\n");
-    this.callback.apply(this.context,[this]);
+    this.callback.apply(this.context,[this,true]);
   },
 };
 
@@ -113,10 +113,34 @@ var ResizeCommand={
   },
   complete:function(err){
     grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
-    this.callback.apply(this.context,[this]);
+    this.callback.apply(this.context,[this,true]);
   }
 };
 
+/**
+* ConvertCommand
+* raw interface to the convert command in imagemagick
+* accepts an array of command line arguments
+**/
+var ConvertCommand={
+  args: undefined,
+  callback: undefined,
+  context: undefined,
+  im: undefined,
+  init:function(pArgs,pCallback,pContext){
+    this.args=pArgs;
+    this.callback=pCallback;
+    this.context=pContext;
+    this.im=require('node-imagemagick');
+
+    grunt.log.write('convert: '+this.args+"...\n");
+    this.im.convert(this.args,proxy(this.complete,this));
+  },
+  complete:function(err){
+    grunt.log.write('convert complete...'+"\n"+err+"\n");
+    this.callback.apply(this.context,[this,true]);
+  }
+};
 
 
 
@@ -212,11 +236,14 @@ module.exports = function(grunt) {
     }
   });
 
-  // ==========================================================================
-  // HELPERS
-  // ==========================================================================
-
-  grunt.registerHelper('imagemagick-resize', function() {
-    return '';
+  grunt.registerMultiTask('imagemagick-convert','Converts images using imagemagick',function(){
+    var done=this.async();
+    grunt.log.write("Beginning convert operation\n");
+    var cmd=Object.create(ConvertCommand);
+    function onCmdComplete(cmd,success){
+      grunt.log.write("completed:"+cmd.args+"\n");
+      done();
+    }
+    cmd.init(this.data.args,onCmdComplete,this);
   });
 };
