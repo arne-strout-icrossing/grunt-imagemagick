@@ -1,6 +1,8 @@
 # grunt-imagemagick
 
-Adds utility tasks for grunt which use ImageMagick
+Adds utility tasks for grunt to access ImageMagick via the node_imagemagick package.
+You will need to have image magick CLI tools installed as described in the node_imagemagick readme.
+see [node-imagemagick]
 
 ## Getting Started
 Install this grunt plugin next to your project's [grunt.js gruntfile][getting_started] with: `npm install grunt-imagemagick`
@@ -21,7 +23,7 @@ _(Coming soon)_
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt][grunt].
 
 ## Release History
-_(Nothing yet)_
+_0.1.4_ First functional build on NPM
 
 ## License
 Copyright (c) 2012 Arne Strout  
