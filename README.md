@@ -65,6 +65,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 _0.1.4_ First functional build on NPM
+_0.1.5_ Added documentation
 
 ## License
 Copyright (c) 2012 Arne Strout  
