@@ -32,7 +32,6 @@
     "grunt": "~0.3.17"
   },
   "dependencies":{
-    "path":">= 0.0.1",
     "node-imagemagick":""
   },
   "keywords": [
