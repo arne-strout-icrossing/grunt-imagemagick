@@ -213,7 +213,7 @@ module.exports = function(grunt) {
     var fls=grunt.file.expand(this.data.from+this.data.files);
 
     function onCmdComplete(cmd,success){
-      grunt.log.write("completed:"+cmd.dstPath+"\n");
+      grunt.log.write("completed:"+cmd.props.dstPath+"\n");
       cmds.splice(cmds.indexOf(cmd),1);
       if(cmds.length<1){
         done();
