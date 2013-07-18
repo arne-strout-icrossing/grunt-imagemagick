@@ -112,7 +112,14 @@ var ResizeCommand={
     this.im.resize(this.props,proxy(this.complete,this));
   },
   complete:function(err){
-    grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
+    grunt.log.write('created '+this.props.dstPath+"\n");
+    if (err !== undefined && err !== null) {
+      if (this.context.data.fatals === true) {
+        grunt.warn(err);
+	  } else {
+	    grunt.log.write('error: '+err+"\n");
+	  }
+	}
     this.callback.apply(this.context,[this,true]);
   }
 };
@@ -137,7 +144,14 @@ var ConvertCommand={
     this.im.convert(this.args,proxy(this.complete,this));
   },
   complete:function(err){
-    grunt.log.write('convert complete...'+"\n"+err+"\n");
+    grunt.log.write('convert complete...'+"\n");
+    if (err !== undefined && err !== null) {
+      if (this.context.data.fatals === true) {
+        grunt.warn(err);
+	  } else {
+	    grunt.log.write('error: '+err+"\n");
+	  }
+	}
     this.callback.apply(this.context,[this,true]);
   }
 };
@@ -205,7 +219,7 @@ module.exports = function(grunt) {
     var fls=grunt.file.expand(this.data.from+this.data.files);
 
     function onCmdComplete(cmd,success){
-      grunt.log.write("completed:"+cmd.dstPath+"\n");
+      grunt.log.write("completed:"+cmd.props.dstPath+"\n");
       cmds.splice(cmds.indexOf(cmd),1);
       if(cmds.length<1){
         done();
