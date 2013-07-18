@@ -41,6 +41,21 @@ grunt.initConfig({
 	}
 });
 ```
+### Error Handling
+Errors comming from the underlying cli are just displayed as default, you can get a warning thrown if you like by configuring a flag:
+```javascript
+grunt.initConfig({
+	"imagemagick-convert":{
+	  dev:{
+	    args:['test/resizeme.jpg','-resize', '25x25', 'test/resized/resizeme-small.jpg'],
+	    fatals: true
+	  }
+	}
+});
+```
+This is only working for
+* imagemagick-resize
+* imagemagick-convert
 # Tasks
 __imagemagick-convert__
 Use the _args_ property to identify the list of arguments to pass to ImageMagick's convert command.
