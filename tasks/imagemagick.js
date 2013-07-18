@@ -112,7 +112,11 @@ var ResizeCommand={
     this.im.resize(this.props,proxy(this.complete,this));
   },
   complete:function(err){
-    grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
+    if (err !== undefined && this.context.data.fatals === true) {
+      grunt.warn('processing '+this.props.dstPath+'--'+err+"\n");
+	} else {
+      grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
+	}
     this.callback.apply(this.context,[this,true]);
   }
 };
@@ -137,7 +141,11 @@ var ConvertCommand={
     this.im.convert(this.args,proxy(this.complete,this));
   },
   complete:function(err){
-    grunt.log.write('convert complete...'+"\n"+err+"\n");
+    if (err !== undefined && this.context.data.fatals === true) {
+      grunt.warn('processing '+this.args+'--'+err+"\n");
+	} else {
+      grunt.log.write('convert complete...'+"\n"+err+"\n");
+    }
     this.callback.apply(this.context,[this,true]);
   }
 };
