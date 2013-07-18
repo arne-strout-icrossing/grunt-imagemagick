@@ -112,7 +112,7 @@ var ResizeCommand={
     this.im.resize(this.props,proxy(this.complete,this));
   },
   complete:function(err){
-    grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
+    grunt.log.write('created '+this.props.dstPath+"\n");
     if (err !== undefined && err !== null) {
       if (this.context.data.fatals === true) {
         grunt.warn(err);
@@ -144,7 +144,7 @@ var ConvertCommand={
     this.im.convert(this.args,proxy(this.complete,this));
   },
   complete:function(err){
-    grunt.log.write('convert complete...'+"\n"+err+"\n");
+    grunt.log.write('convert complete...'+"\n");
     if (err !== undefined && err !== null) {
       if (this.context.data.fatals === true) {
         grunt.warn(err);
