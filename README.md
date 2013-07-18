@@ -56,6 +56,7 @@ grunt.initConfig({
 This is only working for
 * imagemagick-resize
 * imagemagick-convert
+
 # Tasks
 __imagemagick-convert__
 Use the _args_ property to identify the list of arguments to pass to ImageMagick's convert command.
