@@ -112,10 +112,13 @@ var ResizeCommand={
     this.im.resize(this.props,proxy(this.complete,this));
   },
   complete:function(err){
-    if (err !== undefined && this.context.data.fatals === true) {
-      grunt.warn('processing '+this.props.dstPath+'--'+err+"\n");
-	} else {
-      grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
+    grunt.log.write('created '+this.props.dstPath+'--'+err+"\n");
+    if (err !== undefined && err !== null) {
+      if (this.context.data.fatals === true) {
+        grunt.warn(err);
+	  } else {
+	    grunt.log.write('error: '+err+"\n");
+	  }
 	}
     this.callback.apply(this.context,[this,true]);
   }
@@ -141,11 +144,14 @@ var ConvertCommand={
     this.im.convert(this.args,proxy(this.complete,this));
   },
   complete:function(err){
-    if (err !== undefined && this.context.data.fatals === true) {
-      grunt.warn('processing '+this.args+'--'+err+"\n");
-	} else {
-      grunt.log.write('convert complete...'+"\n"+err+"\n");
-    }
+    grunt.log.write('convert complete...'+"\n"+err+"\n");
+    if (err !== undefined && err !== null) {
+      if (this.context.data.fatals === true) {
+        grunt.warn(err);
+	  } else {
+	    grunt.log.write('error: '+err+"\n");
+	  }
+	}
     this.callback.apply(this.context,[this,true]);
   }
 };
