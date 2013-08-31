@@ -116,10 +116,10 @@ var ResizeCommand={
     if (err !== undefined && err !== null) {
       if (this.context.data.fatals === true) {
         grunt.warn(err);
-	  } else {
-	    grunt.log.write('error: '+err+"\n");
-	  }
-	}
+      } else {
+        grunt.log.write('error: '+err+"\n");
+      }
+    }
     this.callback.apply(this.context,[this,true]);
   }
 };
@@ -148,10 +148,10 @@ var ConvertCommand={
     if (err !== undefined && err !== null) {
       if (this.context.data.fatals === true) {
         grunt.warn(err);
-	  } else {
-	    grunt.log.write('error: '+err+"\n");
-	  }
-	}
+      } else {
+        grunt.log.write('error: '+err+"\n");
+      }
+    }
     this.callback.apply(this.context,[this,true]);
   }
 };
@@ -252,12 +252,25 @@ module.exports = function(grunt) {
 
   grunt.registerMultiTask('imagemagick-convert','Converts images using imagemagick',function(){
     var done=this.async();
+    var cArgs = [];
     grunt.log.write("Beginning convert operation\n");
-    var cmd=Object.create(ConvertCommand);
     function onCmdComplete(cmd,success){
       grunt.log.write("completed:"+cmd.args+"\n");
-      done();
+      cArgs.splice(cArgs.indexOf(cmd),1);
+      if(cArgs.length<1) {
+        done();
+      }
     }
-    cmd.init(this.data.args,onCmdComplete,this);
+
+    // see if we are given single convert command or array of multiple ones
+    if(Object.prototype.toString.call( this.data.args[0] ) !== '[object Array]') {
+      cArgs.push(this.data.args);
+    } else {
+      cArgs = this.data.args;
+    }
+    for(var i=0; i<cArgs.length; i++) {
+      var cmd=Object.create(ConvertCommand);
+      cmd.init(cArgs[i],onCmdComplete,this);
+    }
   });
 };
