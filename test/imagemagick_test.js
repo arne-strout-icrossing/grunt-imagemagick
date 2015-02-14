@@ -49,10 +49,14 @@ exports['imagemagick'] = {
           dev:{
             args:['test/resizeme.jpg','-resize', '25x25', 'test/resized/resizeme-small.jpg']
           }
+        },"imagemagick-identify":{
+          dev:{
+            args:'test/resizeme.jpg'
+          }
         }
       });
       grunt.loadTasks('tasks');
-      grunt.task.run('imagemagick-hisrc imagemagick-resize imagemagick-convert');
+      grunt.task.run('imagemagick-hisrc imagemagick-resize imagemagick-convert imagemagick-identify');
       test.ok(true,"Works");
     }catch(e){
       test.ok(false,"Broken:["+e+"]");

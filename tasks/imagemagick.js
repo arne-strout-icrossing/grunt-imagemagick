@@ -116,10 +116,10 @@ var ResizeCommand={
     if (err !== undefined && err !== null) {
       if (this.context.data.fatals === true) {
         grunt.warn(err);
-	  } else {
-	    grunt.log.write('error: '+err+"\n");
-	  }
-	}
+    } else {
+      grunt.log.write('error: '+err+"\n");
+    }
+  }
     this.callback.apply(this.context,[this,true]);
   }
 };
@@ -148,11 +148,43 @@ var ConvertCommand={
     if (err !== undefined && err !== null) {
       if (this.context.data.fatals === true) {
         grunt.warn(err);
-	  } else {
-	    grunt.log.write('error: '+err+"\n");
-	  }
-	}
+    } else {
+      grunt.log.write('error: '+err+"\n");
+    }
+  }
     this.callback.apply(this.context,[this,true]);
+  }
+};
+
+/**
+* IdentifyCommand
+* raw interface to the identify command in imagemagick
+* accepts an array of command line arguments
+**/
+var IdentifyCommand={
+  args: undefined,
+  callback: undefined,
+  context: undefined,
+  im: undefined,
+  init:function(pArgs,pCallback,pContext){
+    this.args=pArgs;
+    this.callback=pCallback;
+    this.context=pContext;
+    this.im=require('node-imagemagick');
+
+    grunt.log.write('identify: '+this.args+"...\n");
+    this.im.identify(this.args,proxy(this.complete,this));
+  },
+  complete:function(err, result){
+    grunt.log.write('identify complete...'+"\n");
+    if (err !== undefined && err !== null) {
+      if (this.context.data.fatals === true) {
+        grunt.warn(err);
+    } else {
+      grunt.log.write('error: '+err+"\n");
+    }
+  }
+    this.callback.apply(this.context,[this,true,result]);
   }
 };
 
@@ -256,6 +288,17 @@ module.exports = function(grunt) {
     var cmd=Object.create(ConvertCommand);
     function onCmdComplete(cmd,success){
       grunt.log.write("completed:"+cmd.args+"\n");
+      done();
+    }
+    cmd.init(this.data.args,onCmdComplete,this);
+  });
+
+  grunt.registerMultiTask('imagemagick-identify','Converts images using imagemagick',function(){
+    var done=this.async();
+    grunt.log.write("Beginning identify operation\n");
+    var cmd=Object.create(IdentifyCommand);
+    function onCmdComplete(cmd,success,features){
+      grunt.log.write("completed:"+JSON.stringify(features)+"\n");
       done();
     }
     cmd.init(this.data.args,onCmdComplete,this);
