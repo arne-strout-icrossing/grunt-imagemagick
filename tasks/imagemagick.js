@@ -100,7 +100,6 @@ var ResizeCommand={
   context:undefined,
   im:undefined,
   init:function(pfrom,pto,pprops,pcallback,pcontext){
-    
     this.props=Object.create(pprops);
     this.props.srcPath=pfrom;
     this.props.dstPath=pto;

@@ -20,7 +20,7 @@ var grunt = require('grunt');
     test.ifError(value)
 */
 
-exports['imagemagick'] = {
+exports.imagemagick = {
   setUp: function(done) {
     // setup here
     done();
@@ -52,7 +52,7 @@ exports['imagemagick'] = {
         }
       });
       grunt.loadTasks('tasks');
-      grunt.task.run('imagemagick-hisrc imagemagick-resize imagemagick-convert');
+      grunt.task.run(['imagemagick-hisrc','imagemagick-resize','imagemagick-convert']);
       test.ok(true,"Works");
     }catch(e){
       test.ok(false,"Broken:["+e+"]");
